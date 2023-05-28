@@ -1,9 +1,13 @@
 package com.crud.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.crud.entity.Board;
 import com.crud.repository.BoardRepository;
@@ -16,7 +20,20 @@ public class BoardService {
 	
 	
 	// 글작성
-	public void write(Board board) {
+	public void write(Board board, MultipartFile file) throws IllegalStateException, IOException {
+		
+		String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+		//식별자
+		UUID uuid = UUID.randomUUID();
+		
+		String fileName = uuid + "_" + file.getOriginalFilename();
+		
+		File saveFile = new File(projectPath, fileName);
+		
+		file.transferTo(saveFile);
+		
+		board.setFilename(fileName);
+		board.setFilepath("/files/" + fileName);
 		
 		boardRepository.save(board);
 	}
@@ -34,6 +51,8 @@ public class BoardService {
 	// 특정 게시글 삭제
 	public void boardDelete(Integer id) {
 		boardRepository.deleteById(id);
-		
 	}
+	
+	
+	
 }
