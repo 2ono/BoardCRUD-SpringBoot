@@ -1,5 +1,4 @@
 package com.crud.controller;
-
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +45,19 @@ public class BoardController {
 
 	@GetMapping("/board/list")
 	public String boardList(Model model,
-			@PageableDefault(page = 0, size = 10, sort = "id", direction = Direction.DESC) Pageable pageable) {
+			@PageableDefault(page = 0, size = 10, sort = "id", direction = Direction.DESC) Pageable pageable, 
+			String seachKeyword) {
+
+		Page<Board> list = null;
+
+		if (seachKeyword == null) {
+			list = boardService.boardList(pageable);
+		} else {
+			list = boardService.boardSearchList(seachKeyword, pageable);
 		
-		Page<Board> list = boardService.boardList(pageable);
+		}
+		
+		
 		
 		int nowPage = list.getPageable().getPageNumber() + 1;
 		int startPage = Math.max(nowPage - 4, 1);
